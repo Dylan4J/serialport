@@ -1,0 +1,104 @@
+<!--
+	THIS EXAMPLE WAS DOWNLOADED FROM https://echarts.apache.org/examples/zh/editor.html?c=line-smooth
+-->
+<!DOCTYPE html>
+<html lang="zh-CN" style="height: 100%">
+<head>
+    <meta charset="utf-8">
+</head>
+<body style="height: 100%; margin: 0">
+<div id="container" style="height: 100%"></div>
+
+
+<script type="text/javascript" th:src="@{/js/echarts.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.js}"></script>
+<!-- Uncomment this line if you want to dataTool extension
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@5.3.2/dist/extension/dataTool.min.js"></script>
+-->
+<!-- Uncomment this line if you want to use gl extension
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-gl@2/dist/echarts-gl.min.js"></script>
+-->
+<!-- Uncomment this line if you want to echarts-stat extension
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-stat@latest/dist/ecStat.min.js"></script>
+-->
+<!-- Uncomment this line if you want to use map
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/js/china.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/js/world.js"></script>
+-->
+<!-- Uncomment these two lines if you want to use bmap extension
+<script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=YOUR_API_KEY"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@5.3.2/dist/extension/bmap.min.js"></script>
+-->
+
+<script type="text/javascript">
+    var dom = document.getElementById('container');
+    var myChart = echarts.init(dom, null, {
+        renderer: 'canvas',
+        useDirtyRect: false
+    });
+    var app = {};
+
+    var option;
+
+    let xData = [];
+    let yData = [];
+    function ini(){
+        for (let i = 0; i < 1500; i++) {
+            xData[i] =i+1;
+            yData[i] = 0;
+        }
+    }
+    ini();
+    option = {
+        //提示框取默认值，即鼠标移动到柱状图会显示内容
+        tooltip: {
+            trigger: 'axis', //触发类型；轴触发，axis则鼠标hover到一条柱状图显示全部数据，item则鼠标hover到折线点显示相应数据，
+
+        },
+        xAxis: {
+            type: 'category',
+            data: xData
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [
+            {
+                data: yData,
+                type: 'line',
+                smooth: true
+            }
+        ]
+    };
+
+    if (option && typeof option === 'object') {
+        myChart.setOption(option);
+    }
+    let temp = [];
+    setInterval(function () {
+
+        $.ajax({
+            type: 'get',
+            url: '/getData',//请求数据的地址
+            dataType: "json",        //返回数据形式为json
+            success: function (result) {
+                temp = result;
+            },error: function (errorMsg) {
+                //请求失败时执行该函数
+
+                myChart.hideLoading();
+            }
+        });
+        myChart.setOption({
+            series: [
+                {
+                    data: temp
+                }
+            ]
+        });
+    }, 50);
+
+    window.addEventListener('resize', myChart.resize);
+</script>
+</body>
+</html>
