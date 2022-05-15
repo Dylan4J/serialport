@@ -1,11 +1,15 @@
-package com.dylan.serialport.listener;
+package com.dylan.serialportview.listener;
 
-import com.dylan.serialport.component.WeightParser;
-import com.dylan.serialport.util.SerialPortUtil;
+
+import com.dylan.serialportview.component.WeightParser;
+import com.dylan.serialportview.util.SerialPortUtil;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortEvent;
 import com.fazecast.jSerialComm.SerialPortPacketListener;
 import lombok.Getter;
+import lombok.Setter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 
 /**
  * @program: serialport
@@ -14,20 +18,33 @@ import lombok.Getter;
  * @create: 2022-05-14 17:32
  **/
 @Getter
+@Setter
 public class SerialPortReadingListener implements SerialPortPacketListener {
+    private static volatile SerialPortReadingListener listener = null;
     private SerialPort port = null;
     private WeightParser parser;
 
-    private static final int parseDataLength = 10000;
+    private static final int parseDataLength = 1500;
     /**
      * 触发读取监听器时从串口读取到的内容
      */
     private String context = "";
 
-    public SerialPortReadingListener(SerialPort port) {
-        this.port = port;
+    private SerialPortReadingListener() {
         this.parser = new WeightParser(parseDataLength);
     }
+
+    public static SerialPortReadingListener getInstance(){
+        if (listener == null) {
+            synchronized (SerialPortReadingListener.class){
+                if (listener == null){
+                    listener = new SerialPortReadingListener();
+                }
+            }
+        }
+        return listener;
+    }
+
 
     @Override
     public int getListeningEvents() {
@@ -50,7 +67,9 @@ public class SerialPortReadingListener implements SerialPortPacketListener {
             System.out.println("共读取了 " + receivedDataBytes.length + " 字节.");
             System.out.println("读取的内容为 ： " + context);
             long weight = parseDataOfWight(receivedDataBytes);
-            parser.add(weight);
+            synchronized (WeightParser.class){
+                parser.add(weight);
+            }
             System.out.println("称重数据为：" + weight + " g");
 
         }

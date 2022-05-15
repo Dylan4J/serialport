@@ -1,4 +1,4 @@
-package com.dylan.serialport.component;
+package com.dylan.serialportview.component;
 
 import lombok.Getter;
 
@@ -17,6 +17,7 @@ public class WeightParser {
 
     public WeightParser(int iniDataLength) {
         this.weightData = new ArrayDeque<>(iniDataLength);
+
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.dylan.serialport.listener;
+package com.dylan.serialportview.listener;
 
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;

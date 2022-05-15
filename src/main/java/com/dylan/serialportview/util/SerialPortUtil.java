@@ -1,4 +1,4 @@
-package com.dylan.serialport.util;
+package com.dylan.serialportview.util;
 
 import cn.hutool.core.io.checksum.crc16.CRC16Modbus;
 import com.fazecast.jSerialComm.SerialPort;
